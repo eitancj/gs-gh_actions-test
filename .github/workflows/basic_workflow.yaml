@@ -1,9 +1,12 @@
-name: "Basic Workflow"
+name: Basic Workflow
 
 on:
     push:
       branches:
-      - main
+        - main
+      paths-ignore: 
+        - '.github/workflows/**'
+
 
 jobs:
     basic_job:
@@ -13,10 +16,10 @@ jobs:
         steps:
             - name: update apt packages
               run: |
-                apt-get update
+                sudo apt-get update
             
             - name: install doas
+              if: 
               run: |
-                apt install -y doas
-
+                sudo apt install -y doas
         
