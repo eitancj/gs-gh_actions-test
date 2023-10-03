@@ -6,6 +6,8 @@ on:
         - main
       paths-ignore: 
         - '.github/workflows/**'
+    
+    workflow_dispatch: 
 
 
 jobs:
@@ -15,11 +17,16 @@ jobs:
     
         steps:
             - name: update apt packages
+              if: github.event_name == 'push'
               run: |
                 sudo apt-get update
-            
+              
             - name: install doas
-              if: 
+              if: github.event_name == 'push'
               run: |
                 sudo apt install -y doas
-        
+              
+            - name: test workflow_dispatch
+              if: github.event_name == 'workflow_dispatch'
+              run: |
+                echo "This workflow was triggered manually."
