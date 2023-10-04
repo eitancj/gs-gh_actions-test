@@ -30,7 +30,7 @@ jobs:
           mkdir -p "${{ env.artpath }}"
           mkdir -p "tmp"
           printf "** Current Commit **\n" > "${{ env.gitlog }}" && git log -1 --oneline > "${{ env.gitlog }}"
-          printf "\n\n** Workspace Size Info **\n" >> ${{ env.gitlog }}\n" && du -sh $(ls -A) | sort -hr >> "${{ env.gitlog }}"
+          printf "\n\n** Workspace Size Info **\n" >> "${{ env.gitlog }}\n" && du -sh $(ls -A) | sort -hr >> "${{ env.gitlog }}"
           printf "\n\n** Workspace Files **\n" >> "${{ env.gitlog }}" && tree -a >> "${{ env.gitlog }}"
 
       - name: upload text-file artifacts
