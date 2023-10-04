@@ -29,9 +29,13 @@ jobs:
         run: |
           mkdir -p "${{ env.artpath }}"
           mkdir -p "tmp"
-          printf "** Current Commit **\n" > "${{ env.gitlog }}" && git log -1 --oneline > "${{ env.gitlog }}"
-          printf "\n\n** Workspace Size Info **\n" >> "${{ env.gitlog }}\n" && du -sh $(ls -A) | sort -hr >> "${{ env.gitlog }}"
-          printf "\n\n** Workspace Files **\n" >> "${{ env.gitlog }}" && tree -a >> "${{ env.gitlog }}"
+
+          printf "** Current Commit **\n" > "${{ env.gitlog }}"
+          git log -1 --oneline >> "${{ env.gitlog }}"
+          printf "\n\n** Workspace Size Info **\n" >> "${{ env.gitlog }}"
+          du -sh $(ls -A) | sort -hr >> "${{ env.gitlog }}"
+          printf "\n\n** Workspace Files **\n" >> "${{ env.gitlog }}"
+          tree -a >> "${{ env.gitlog }}"
 
       - name: upload text-file artifacts
         uses: actions/upload-artifact@v3
@@ -78,6 +82,6 @@ jobs:
           env:
             gitlog: "${{ env.tmppath }}/gitlog.txt"
           run: |
-            printf "\n\n** Workspace Item-Count Summary **\n"
+            printf "\n** Workspace Item-Count Summary **\n"
             grep -E "^[0-9]+ directories, [0-9]+ files$" "${{ env.gitlog }}" | tail -1
           
