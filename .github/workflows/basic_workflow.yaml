@@ -26,21 +26,24 @@ jobs:
           gitlog: "${{ env.artpath }}/gitlog.txt"
         run: |
           mkdir -p "${{ env.artpath }}"
+          mkdir -p "tmp"
           git log -1 --oneline > "${{ env.gitlog }}" && echo>>"${{ env.gitlog }}"
-          du -sh * .* | sort -hr >> "${{ env.gitlog }}" && echo>>"${{ env.gitlog }}"
+          du -sh .* * | sort -hr >> "${{ env.gitlog }}" && echo>>"${{ env.gitlog }}"
           tree -a >> "${{ env.gitlog }}" && echo>>"${{ env.gitlog }}"
 
-      - name: upload artifacts
+      - name: upload text-file artifacts
         uses: actions/upload-artifact@v3
         with:
-          name: artifacts
-          path: ${{ env.artpath }}/**/*
+          name: text_files
+          path: ${{ env.artpath }}/**/*.txt
       
 
   basic_job:
     name: Basic Job
     runs-on: ubuntu-latest
     needs: checkout_job
+    env:
+      tmppath: ${{ github.workspace }}/tmp
 
     steps:
         - name: update apt packages
@@ -57,3 +60,21 @@ jobs:
           if: github.event_name == 'workflow_dispatch'
           run: |
             echo "This workflow was triggered manually."
+
+        # Workspace Item Count
+        - name: make tmp dir
+          run: mkdir -p "${{ env.tmppath }}"
+
+        - name: download gitlog artifact
+          uses: actions/download-artifact@v3
+          with:
+            name: text_files
+            path: ${{ env.tmppath }}
+
+        - name: print workspace item-count summary
+          env:
+            gitlog: "${{ env.tmppath }}/gitlog.txt"
+          run: |
+            cat "${{ env.gitlog }}" | uniq | tail -1 | \
+            awk '{print "Workspace Item Count:\n"} $1'
+          
