@@ -1,5 +1,5 @@
 name: Basic Workflow
-run-name: ${{ github.triggering_actor }} is playing with GitHub Actions
+# run-name: ${{ github.triggering_actor }} is playing with GitHub Actions
 
 on:
     push:
@@ -7,22 +7,34 @@ on:
         - main
       paths-ignore: 
         - '.github/workflows/**'
-    
+      
     workflow_dispatch: 
-
+    
 jobs:
   checkout_job:
     name: Checkout Job
     runs-on: ubuntu-latest
+    env:
+      artpath: ${{ github.workspace }}/artifacts
 
     steps: 
       - name: checkout git repo
         uses: actions/checkout@v4
     
       - name: list checked out files and commits
+        env:
+          gitlog: "${{ env.artpath }}/gitlog.txt"
         run: |
-          git log --oneline
-          ls -la
+          mkdir -p "${{ env.artpath }}"
+          git log --oneline > "${{ env.gitlog }}"
+          ls -la >> "${{ env.gitlog }}"
+
+      - name: upload artifacts
+        uses: actions/upload-artifact@v3
+        with:
+          name: artifacts
+          path: ${{ github.workspace }}/**/*
+      
 
   basic_job:
     name: Basic Job
