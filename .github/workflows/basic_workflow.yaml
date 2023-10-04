@@ -11,6 +11,7 @@ on:
     workflow_dispatch: 
     
 jobs:
+  # Job 1
   checkout_job:
     name: Checkout Job
     runs-on: ubuntu-latest
@@ -24,12 +25,13 @@ jobs:
       - name: list checked out files and commits
         env:
           gitlog: "${{ env.artpath }}/gitlog.txt"
+        # Output file info to artifact text file
         run: |
           mkdir -p "${{ env.artpath }}"
           mkdir -p "tmp"
-          git log -1 --oneline > "${{ env.gitlog }}" && echo>>"${{ env.gitlog }}"
-          du -sh .* * | sort -hr >> "${{ env.gitlog }}" && echo>>"${{ env.gitlog }}"
-          tree -a >> "${{ env.gitlog }}" && echo>>"${{ env.gitlog }}"
+          printf "** Current Commit **\n" > "${{ env.gitlog }}" && git log -1 --oneline > "${{ env.gitlog }}"
+          printf "\n\n** Workspace Size Info **\n" >> ${{ env.gitlog }}\n" && du -sh $(ls -A) | sort -hr >> "${{ env.gitlog }}"
+          printf "\n\n** Workspace Files **\n" >> "${{ env.gitlog }}" && tree -a >> "${{ env.gitlog }}"
 
       - name: upload text-file artifacts
         uses: actions/upload-artifact@v3
@@ -38,6 +40,7 @@ jobs:
           path: ${{ env.artpath }}/**/*.txt
       
 
+  # Job 2
   basic_job:
     name: Basic Job
     runs-on: ubuntu-latest
@@ -75,6 +78,6 @@ jobs:
           env:
             gitlog: "${{ env.tmppath }}/gitlog.txt"
           run: |
-            cat "${{ env.gitlog }}" | uniq | tail -1 | \
-            awk '{print "Workspace Item Count:\n"} $1'
+            printf "\n\n** Workspace Item-Count Summary **\n"
+            grep -E "^[0-9]+ directories, [0-9]+ files$" "${{ env.gitlog }}" | tail -1
           
