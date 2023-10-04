@@ -26,8 +26,9 @@ jobs:
           gitlog: "${{ env.artpath }}/gitlog.txt"
         run: |
           mkdir -p "${{ env.artpath }}"
-          git log --oneline > "${{ env.gitlog }}"
-          ls -la >> "${{ env.gitlog }}"
+          git log -1 --oneline > "${{ env.gitlog }}" && echo>>"${{ env.gitlog }}"
+          du -sh * .* | sort -hr >> "${{ env.gitlog }}" && echo>>"${{ env.gitlog }}"
+          tree -a >> "${{ env.gitlog }}" && echo>>"${{ env.gitlog }}"
 
       - name: upload artifacts
         uses: actions/upload-artifact@v3
